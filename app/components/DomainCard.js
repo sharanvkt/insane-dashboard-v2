@@ -4,10 +4,12 @@
 import { useState } from "react";
 import DomainModal from "./DomainModal";
 import { Globe } from "lucide-react";
+import Image from "next/image";
 
 export default function DomainCard({ domain, onClick }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Function to get favicon URL
   const getFaviconUrl = (url) => {
@@ -40,15 +42,23 @@ export default function DomainCard({ domain, onClick }) {
       >
         <div className="p-5 flex items-center space-x-4">
           <div className="w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden bg-neutral-700/50 flex items-center justify-center shadow-inner">
-            <img
-              src={getFaviconUrl(domain.url)}
-              alt={`${domain.name} logo`}
-              className="w-full h-full object-cover transition-transform duration-300"
-              style={{ transform: isHovered ? "scale(1.08)" : "scale(1)" }}
-              onError={(e) => {
-                e.target.src = "/placeholder-icon.svg";
-              }}
-            />
+            {imageError ? (
+              <div className="w-10 h-10 flex items-center justify-center">
+                <Globe className="h-8 w-8 text-neutral-500" />
+              </div>
+            ) : (
+              <div className="relative w-full h-full">
+                <Image
+                  src={getFaviconUrl(domain.url)}
+                  alt={`${domain.name} logo`}
+                  className="object-cover transition-transform duration-300"
+                  style={{ transform: isHovered ? "scale(1.08)" : "scale(1)" }}
+                  onError={() => setImageError(true)}
+                  fill
+                  sizes="56px"
+                />
+              </div>
+            )}
           </div>
           <div className="flex-grow">
             <div className="flex items-center justify-between">
