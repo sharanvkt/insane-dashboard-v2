@@ -1,13 +1,37 @@
 // app/lib/permissions.js
 export const userPermissions = {
-  "sharan@gmail.com": {
+  "sharanvkt@gmail.com": {
     role: "admin",
     access: "all", // Full access to all domains
   },
-  "sharanvkt@gmail.com": {
+  "sharan@insanelabs.in": {
+    role: "admin",
+    access: "all", // Full access to all domains
+  },
+  "samuel@insanelabs.in": {
+    role: "admin",
+    access: "all", // Full access to all domains
+  },
+  "sharan@insanemarketers.com": {
+    role: "admin",
+    access: "all", // Full access to all domains
+  },
+  "samuel@insanemarketers.com": {
+    role: "admin",
+    access: "all", // Full access to all domains
+  },
+  "minal@insanelabs.in": {
+    role: "admin",
+    access: "all", // Full access to all domains
+  },
+  "saad@insanelabs.in": {
+    role: "admin",
+    access: "all", // Full access to all domains
+  },
+  "divyanshu@astroarunpandit.org": {
     role: "editor",
     access: "specific",
-    domains: ["Ankit Batra"], // Access limited to specific domain(s)
+    domains: ["Astro Arun Pandit"], // Access limited to specific domain(s)
   },
 };
 
