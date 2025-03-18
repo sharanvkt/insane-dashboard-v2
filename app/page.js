@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import DomainModal from "./components/DomainModal";
 import DomainGrid from "./components/DomainGrid";
 import { Globe, LogOut, PlusCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   const { user, logOut } = useAuth();
@@ -55,10 +56,12 @@ export default function Home() {
                 <div className="hidden md:flex items-center mr-4">
                   <div className="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center overflow-hidden mr-3">
                     {user.photoURL ? (
-                      <img
+                      <Image
                         src={user.photoURL}
                         alt={user.displayName || user.email}
                         className="w-full h-full object-cover"
+                        width={32}
+                        height={32}
                       />
                     ) : (
                       <span className="text-sm font-medium">
