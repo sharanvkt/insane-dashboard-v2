@@ -57,6 +57,11 @@ export const userPermissions = {
     access: "specific",
     domains: ["Ankit Batra"], // Access limited to specific domain(s)
   },
+  "sharanvkt.k@gmail.com": {
+    role: "editor",
+    access: "specific",
+    domains: ["Ankit Batra"], // Access limited to specific domain(s)
+  },
 };
 
 // Helper function to check user permissions
