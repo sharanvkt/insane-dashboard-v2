@@ -24,6 +24,10 @@ export const userPermissions = {
     role: "admin",
     access: "all", // Full access to all domains
   },
+  "sahil@insanelabs.in": {
+    role: "admin",
+    access: "all", // Full access to all domains
+  },
   "saad@insanelabs.in": {
     role: "admin",
     access: "all", // Full access to all domains
@@ -32,6 +36,26 @@ export const userPermissions = {
     role: "editor",
     access: "specific",
     domains: ["Astro Arun Pandit"], // Access limited to specific domain(s)
+  },
+  "ankitbatra94@gmail.com": {
+    role: "editor",
+    access: "specific",
+    domains: ["Ankit Batra"], // Access limited to specific domain(s)
+  },
+  "priyabatra1990@gmail.com": {
+    role: "editor",
+    access: "specific",
+    domains: ["Ankit Batra"], // Access limited to specific domain(s)
+  },
+  "sonalmadaan2@gmail.com": {
+    role: "editor",
+    access: "specific",
+    domains: ["Ankit Batra"], // Access limited to specific domain(s)
+  },
+  "ankit@insanelabs.in": {
+    role: "editor",
+    access: "specific",
+    domains: ["Ankit Batra"], // Access limited to specific domain(s)
   },
 };
 
