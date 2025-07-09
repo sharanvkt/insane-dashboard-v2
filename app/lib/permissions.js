@@ -76,8 +76,8 @@ export function getUserPermissions(email) {
     return { role: "admin", access: "all" };
   }
 
-  // Default permissions for users not in the system
-  return { role: "viewer", access: "none" };
+  // Block all other users - no access
+  return { role: "blocked", access: "none" };
 }
 
 // Helper to check if a user has access to a specific domain
