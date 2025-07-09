@@ -66,7 +66,18 @@ export const userPermissions = {
 
 // Helper function to check user permissions
 export function getUserPermissions(email) {
-  return userPermissions[email] || { role: "viewer", access: "none" };
+  // Check if user has explicit permissions defined
+  if (userPermissions[email]) {
+    return userPermissions[email];
+  }
+
+  // Check if user is from @insanelabs.in domain (but not already defined with specific access)
+  if (email.endsWith("@insanelabs.in")) {
+    return { role: "admin", access: "all" };
+  }
+
+  // Default permissions for users not in the system
+  return { role: "viewer", access: "none" };
 }
 
 // Helper to check if a user has access to a specific domain
