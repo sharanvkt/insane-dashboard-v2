@@ -8,6 +8,9 @@ import {
   updateDoc,
   doc,
   deleteDoc,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -26,4 +29,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { db, collection, addDoc, Timestamp, updateDoc, doc, deleteDoc, auth };
+export {
+  db,
+  collection,
+  addDoc,
+  Timestamp,
+  updateDoc,
+  doc,
+  deleteDoc,
+  query,
+  where,
+  getDocs,
+  auth,
+};

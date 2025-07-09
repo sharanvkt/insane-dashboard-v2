@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Open access to all documents for simplicity
+    // This allows landing pages to fetch content without authentication
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Firebase debug logs
+firebase-debug.log*
+pglite-debug.log*
+
+# Firebase cache
+.firebase/
