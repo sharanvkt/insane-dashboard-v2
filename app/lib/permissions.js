@@ -64,12 +64,32 @@ export const userPermissions = {
   "sharanvkt.k@gmail.com": {
     role: "editor",
     access: "specific",
-    domains: ["Chirag Jhumkhawala", "Siddharth Kapoor", "Aarzoo Shah", "Deepak Choudhary"], // Access limited to specific domain(s)
+    domains: [
+      "Chirag Jhumkhawala",
+      "Siddharth Kapoor",
+      "Aarzoo Shah",
+      "Deepak Choudhary",
+    ], // Access limited to specific domain(s)
   },
   "nikita@allianceoftitans.com": {
     role: "editor",
     access: "specific",
-    domains: ["Chirag Jhumkhawala", "Siddharth Kapoor", "Aarzoo Shah", "Deepak Choudhary"], // Access limited to specific domain(s)
+    domains: [
+      "Chirag Jhumkhawala",
+      "Siddharth Kapoor",
+      "Aarzoo Shah",
+      "Deepak Choudhary",
+    ], // Access limited to specific domain(s)
+  },
+  "sudarshan@allianceoftitans.com": {
+    role: "editor",
+    access: "specific",
+    domains: [
+      "Chirag Jhumkhawala",
+      "Siddharth Kapoor",
+      "Aarzoo Shah",
+      "Deepak Choudhary",
+    ], // Access limited to specific domain(s)
   },
 };
 
