@@ -6,7 +6,10 @@ import AuthGuard from "./components/AuthGuard";
 import { useState, useEffect } from "react";
 import DomainModal from "./components/DomainModal";
 import DomainGrid from "./components/DomainGrid";
-import { Globe, LogOut, PlusCircle } from "lucide-react";
+import SchedulesList from "./components/SchedulesList";
+import { Globe, LogOut, PlusCircle, Calendar, Grid3X3 } from "lucide-react";
+import { db, collection, query, where, getDocs } from "./lib/firebase";
+import { hasAccessToDomain } from "./lib/permissions";
 import Image from "next/image";
 
 export default function Home() {
@@ -14,6 +17,8 @@ export default function Home() {
   const [isAddDomainModalOpen, setAddDomainModalOpen] = useState(false);
   const [greeting, setGreeting] = useState("");
   const [currentTime, setCurrentTime] = useState("");
+  const [activeTab, setActiveTab] = useState("domains");
+  const [userDomains, setUserDomains] = useState([]);
 
   useEffect(() => {
     // Set greeting based on time of day
@@ -27,6 +32,32 @@ export default function Home() {
     const options = { weekday: "long", month: "long", day: "numeric" };
     setCurrentTime(now.toLocaleDateString(undefined, options));
   }, []);
+
+  useEffect(() => {
+    if (user?.email) {
+      loadUserDomains();
+    }
+  }, [user]);
+
+  const loadUserDomains = async () => {
+    try {
+      const domainsQuery = query(collection(db, "Domains"));
+      const snapshot = await getDocs(domainsQuery);
+      const domains = [];
+
+      for (const doc of snapshot.docs) {
+        const domainData = { id: doc.id, ...doc.data() };
+        const hasAccess = hasAccessToDomain(user.email, domainData.name);
+        if (hasAccess) {
+          domains.push(domainData);
+        }
+      }
+
+      setUserDomains(domains);
+    } catch (error) {
+      console.error("Error loading domains:", error);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -110,15 +141,56 @@ export default function Home() {
             <div className="h-4"></div>
           </div>
 
-          {/* Domains Section */}
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-medium">Your Domains</h2>
+          {/* Tab Navigation */}
+          <div className="mb-8">
+            <div className="flex space-x-1 bg-neutral-800/50 p-1 rounded-xl inline-flex">
+              <button
+                onClick={() => setActiveTab("domains")}
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center space-x-2 ${
+                  activeTab === "domains"
+                    ? "bg-neutral-700 text-white shadow-sm"
+                    : "text-neutral-400 hover:text-white hover:bg-neutral-700/50"
+                }`}
+              >
+                <Grid3X3 className="w-4 h-4" />
+                <span>Domains</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("schedules")}
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center space-x-2 ${
+                  activeTab === "schedules"
+                    ? "bg-neutral-700 text-white shadow-sm"
+                    : "text-neutral-400 hover:text-white hover:bg-neutral-700/50"
+                }`}
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Schedules</span>
+              </button>
             </div>
           </div>
 
-          {/* Domain Grid */}
-          <DomainGrid userEmail={user?.email} />
+          {/* Content based on active tab */}
+          {activeTab === "domains" && (
+            <>
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-medium">Your Domains</h2>
+                </div>
+              </div>
+              <DomainGrid userEmail={user?.email} />
+            </>
+          )}
+
+          {activeTab === "schedules" && (
+            <>
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-medium">Upcoming Schedules</h2>
+                </div>
+              </div>
+              <SchedulesList domains={userDomains} />
+            </>
+          )}
         </div>
 
         {isAddDomainModalOpen && (

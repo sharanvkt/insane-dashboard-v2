@@ -3,10 +3,13 @@
 
 import { useState } from "react";
 import DomainModal from "./DomainModal";
-import { Globe } from "lucide-react";
+import DomainHistory from "./DomainHistory";
+import { Globe, History } from "lucide-react";
+import { getRelativeTime } from "../lib/history";
 
 export default function DomainCard({ domain, onClick }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   // Function to truncate text with ellipsis
@@ -56,10 +59,27 @@ export default function DomainCard({ domain, onClick }) {
               <Globe className="w-3.5 h-3.5 mr-1.5 text-neutral-500" />
               {formatUrl(domain.url)}
             </p>
-            <div className="mt-3 pt-3 border-t border-neutral-700/30">
+            <div className="mt-3 pt-3 border-t border-neutral-700/30 space-y-2">
               <p className="text-neutral-400 text-sm line-clamp-1">
                 {domain.content1 || domain.date || "No content available"}
               </p>
+              {domain.lastUpdated && (
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-neutral-500">
+                    Updated {getRelativeTime(domain.lastUpdated.toDate ? domain.lastUpdated.toDate() : new Date(domain.lastUpdated))} by {domain.updatedBy || 'unknown'}
+                  </p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsHistoryOpen(true);
+                    }}
+                    className="p-1.5 rounded-lg bg-neutral-700/30 hover:bg-neutral-600/30 transition-colors duration-200 text-neutral-400 hover:text-white"
+                    title="View history"
+                  >
+                    <History className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -70,6 +90,14 @@ export default function DomainCard({ domain, onClick }) {
           domain={domain}
           onClose={() => setIsModalOpen(false)}
           isEditing={true}
+        />
+      )}
+      
+      {isHistoryOpen && (
+        <DomainHistory
+          domainId={domain.id}
+          domainName={domain.name}
+          onClose={() => setIsHistoryOpen(false)}
         />
       )}
     </>

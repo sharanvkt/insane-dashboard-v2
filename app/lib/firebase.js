@@ -7,9 +7,11 @@ import {
   Timestamp,
   updateDoc,
   doc,
+  getDoc,
   deleteDoc,
   query,
   where,
+  orderBy,
   getDocs,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -36,9 +38,11 @@ export {
   Timestamp,
   updateDoc,
   doc,
+  getDoc,
   deleteDoc,
   query,
   where,
+  orderBy,
   getDocs,
   auth,
 };

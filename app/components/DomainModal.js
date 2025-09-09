@@ -14,6 +14,7 @@ import {
 import { X, Link, AlertCircle, Loader, Clock, Calendar } from "lucide-react";
 import SchedulePicker from "./SchedulePicker";
 import { createScheduledUpdate, validateScheduleData } from "../lib/scheduler";
+import { createHistoryRecord, calculateChanges } from "../lib/history";
 import { useAuth } from "../context/AuthContext";
 
 export default function DomainModal({ domain, onClose, isEditing = false }) {
@@ -75,13 +76,62 @@ export default function DomainModal({ domain, onClose, isEditing = false }) {
           }
         });
 
+        // Calculate changes for history
+        console.log("DEBUG: Original domain data:", domain);
+        console.log("DEBUG: Content state:", content);
+        console.log("DEBUG: Updates to apply:", updates);
+        
+        const oldData = {
+          name: domain.name || "",
+          url: domain.url || "",
+          content1: domain.content1 || "",
+          content2: domain.content2 || "",
+          content3: domain.content3 || "",
+          content4: domain.content4 || ""
+        };
+        
+        const newData = {
+          name: domain.name || "",
+          url: domain.url || "",
+          content1: content.content1 || "",
+          content2: content.content2 || "",
+          content3: content.content3 || "",
+          content4: content.content4 || ""
+        };
+        
+        console.log("DEBUG: Old data for comparison:", oldData);
+        console.log("DEBUG: New data for comparison:", newData);
+        
+        const changes = calculateChanges(oldData, newData);
+        console.log("DEBUG: Calculated changes:", changes);
+        
+        // Add audit fields
+        updates.lastUpdated = Timestamp.fromDate(new Date());
+        updates.updatedBy = user?.email || "unknown";
+
         await updateDoc(doc(db, "Domains", domain.id), updates);
+        
+        // Create history record - for now, always create to test
+        console.log("DEBUG: Creating history record...");
+        try {
+          const historyResult = await createHistoryRecord({
+            domainId: domain.id,
+            changes,
+            updatedBy: user?.email || "unknown",
+            action: "update"
+          });
+          console.log("DEBUG: History record result:", historyResult);
+        } catch (historyError) {
+          console.error("DEBUG: History creation failed:", historyError);
+        }
       } else {
         // Add new domain
         const domainData = {
           name,
           url: `https://${url}`,
           timestamp: Timestamp.fromDate(new Date()),
+          lastUpdated: Timestamp.fromDate(new Date()),
+          updatedBy: user?.email || "unknown",
           ...content,
         };
 
