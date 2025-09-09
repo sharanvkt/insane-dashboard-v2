@@ -135,7 +135,26 @@ export default function DomainModal({ domain, onClose, isEditing = false }) {
           ...content,
         };
 
-        await addDoc(collection(db, "Domains"), domainData);
+        console.log("DEBUG: Creating new domain:", name);
+        const docRef = await addDoc(collection(db, "Domains"), domainData);
+        
+        // Create history record for domain creation
+        console.log("DEBUG: Creating creation history record for:", name);
+        const creationData = {
+          name: name || "",
+          url: `https://${url}` || "",
+          content1: content.content1 || "",
+          content2: content.content2 || "",
+          content3: content.content3 || "",
+          content4: content.content4 || ""
+        };
+        
+        await createHistoryRecord({
+          domainId: docRef.id,
+          changes: { creation: { old: "", new: JSON.stringify(creationData) } },
+          updatedBy: user?.email || "unknown",
+          action: "create"
+        });
       }
 
       handleCloseWithAnimation();
@@ -193,6 +212,26 @@ export default function DomainModal({ domain, onClose, isEditing = false }) {
       console.log("Schedule result:", result);
 
       if (result.success) {
+        // Create history record for schedule creation
+        console.log("DEBUG: Creating schedule creation history record");
+        const scheduleInfo = {
+          type: scheduleData.scheduleType,
+          executeAt: scheduleData.executeAt.toISOString(),
+          updates: Object.keys(updates).join(', '),
+          recurrence: scheduleData.recurrence ? `${scheduleData.recurrence.type}ly` : 'none'
+        };
+        
+        try {
+          await createHistoryRecord({
+            domainId: domain.id,
+            changes: { schedule_created: { old: "", new: JSON.stringify(scheduleInfo) } },
+            updatedBy: user?.email || "unknown",
+            action: "schedule_create"
+          });
+        } catch (historyError) {
+          console.error("DEBUG: Schedule history creation failed:", historyError);
+        }
+        
         handleCloseWithAnimation();
       } else {
         setFormError(result.error || "Failed to schedule update");
@@ -209,6 +248,27 @@ export default function DomainModal({ domain, onClose, isEditing = false }) {
   const handleDelete = async () => {
     setIsSubmitting(true);
     try {
+      // Create history record for deletion before deleting the domain
+      const deletionData = {
+        name: domain.name || "",
+        url: domain.url || "",
+        content1: domain.content1 || "",
+        content2: domain.content2 || "",
+        content3: domain.content3 || "",
+        content4: domain.content4 || ""
+      };
+
+      console.log("DEBUG: Creating deletion history record for:", domain.name);
+      
+      // Create deletion history record
+      await createHistoryRecord({
+        domainId: domain.id,
+        changes: { deletion: { old: JSON.stringify(deletionData), new: "DELETED" } },
+        updatedBy: user?.email || "unknown",
+        action: "delete"
+      });
+
+      // Now delete the domain
       await deleteDoc(doc(db, "Domains", domain.id));
       handleCloseWithAnimation();
     } catch (error) {

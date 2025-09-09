@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, History, Clock, User, AlertCircle, Loader } from "lucide-react";
+import { X, History, Clock, User, AlertCircle, Loader, Edit, Plus, Trash2, Calendar, CalendarX, CalendarCheck } from "lucide-react";
 import { getDomainHistory, formatChanges, getRelativeTime } from "../lib/history";
 import { useAuth } from "../context/AuthContext";
 
@@ -36,18 +36,81 @@ export default function DomainHistory({ domainId, domainName, onClose }) {
     }
   };
 
+  const getActionInfo = (action) => {
+    switch (action) {
+      case "update":
+        return {
+          label: "Content Updated",
+          icon: Edit,
+          color: "blue",
+          bgColor: "bg-blue-500/20",
+          iconColor: "text-blue-400"
+        };
+      case "create":
+        return {
+          label: "Domain Created", 
+          icon: Plus,
+          color: "green",
+          bgColor: "bg-green-500/20",
+          iconColor: "text-green-400"
+        };
+      case "delete":
+        return {
+          label: "Domain Deleted",
+          icon: Trash2,
+          color: "red", 
+          bgColor: "bg-red-500/20",
+          iconColor: "text-red-400"
+        };
+      case "schedule_create":
+        return {
+          label: "Schedule Created",
+          icon: Calendar,
+          color: "purple",
+          bgColor: "bg-purple-500/20", 
+          iconColor: "text-purple-400"
+        };
+      case "schedule_cancel":
+        return {
+          label: "Schedule Cancelled",
+          icon: CalendarX,
+          color: "orange",
+          bgColor: "bg-orange-500/20",
+          iconColor: "text-orange-400"
+        };
+      case "scheduled_update":
+        return {
+          label: "Scheduled Update Applied",
+          icon: CalendarCheck,
+          color: "indigo",
+          bgColor: "bg-indigo-500/20",
+          iconColor: "text-indigo-400"
+        };
+      default:
+        return {
+          label: "Unknown Action",
+          icon: History,
+          color: "gray",
+          bgColor: "bg-gray-500/20",
+          iconColor: "text-gray-400"
+        };
+    }
+  };
+
   const renderChange = (change) => {
     const formatted = formatChanges(change.changes);
+    const actionInfo = getActionInfo(change.action);
+    const ActionIcon = actionInfo.icon;
     
     return (
       <div key={change.id} className="p-4 bg-neutral-700/30 rounded-xl border border-neutral-600/30">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <div className="p-1.5 bg-purple-500/20 rounded-lg">
-              <History className="w-4 h-4 text-purple-400" />
+            <div className={`p-1.5 ${actionInfo.bgColor} rounded-lg`}>
+              <ActionIcon className={`w-4 h-4 ${actionInfo.iconColor}`} />
             </div>
             <span className="text-sm font-medium text-white">
-              {change.action === "update" ? "Content Updated" : "Domain Created"}
+              {actionInfo.label}
             </span>
           </div>
           <div className="flex items-center space-x-3 text-xs text-neutral-400">

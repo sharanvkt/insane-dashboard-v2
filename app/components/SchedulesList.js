@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { Calendar, Clock, Repeat, X, AlertCircle, Loader, Globe, Trash2 } from "lucide-react";
 import { getScheduledUpdates, cancelScheduledUpdate } from "../lib/scheduler";
-import { getRelativeTime } from "../lib/history";
+import { getRelativeTime, createHistoryRecord } from "../lib/history";
 import { hasAccessToDomain } from "../lib/permissions";
 import { useAuth } from "../context/AuthContext";
 
@@ -64,9 +64,34 @@ export default function SchedulesList({ domains = [] }) {
   const handleCancelSchedule = async (scheduleId) => {
     setCancellingIds(prev => new Set([...prev, scheduleId]));
 
+    // Find the schedule being cancelled for history tracking
+    const scheduleToCancel = schedules.find(s => s.id === scheduleId);
+
     try {
       const result = await cancelScheduledUpdate(scheduleId);
       if (result.success) {
+        // Create history record for schedule cancellation
+        if (scheduleToCancel) {
+          console.log("DEBUG: Creating schedule cancellation history record");
+          const cancelInfo = {
+            type: scheduleToCancel.scheduleType,
+            executeAt: new Date(scheduleToCancel.executeAt).toISOString(),
+            updates: Object.keys(scheduleToCancel.updates || {}).join(', '),
+            recurrence: scheduleToCancel.recurrence ? `${scheduleToCancel.recurrence.type}ly` : 'none'
+          };
+          
+          try {
+            await createHistoryRecord({
+              domainId: scheduleToCancel.domainId,
+              changes: { schedule_cancelled: { old: JSON.stringify(cancelInfo), new: "CANCELLED" } },
+              updatedBy: user?.email || "unknown",
+              action: "schedule_cancel"
+            });
+          } catch (historyError) {
+            console.error("DEBUG: Schedule cancellation history failed:", historyError);
+          }
+        }
+        
         // Remove the cancelled schedule from the list
         setSchedules(prev => prev.filter(schedule => schedule.id !== scheduleId));
       } else {
